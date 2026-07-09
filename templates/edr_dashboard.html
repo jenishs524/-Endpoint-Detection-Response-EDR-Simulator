@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EDR Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0b0e14; color: #cdd6f4; padding:20px; }
+        h1 { color: #f9e2af; }
+        .alert { background: #1e2430; margin:8px 0; padding:10px; border-left:4px solid #f38ba8; border-radius:4px; }
+        .timestamp { color: #89b4fa; }
+        .reason { font-weight: bold; color: #f9e2af; }
+        .pid { color: #a6e3a1; }
+        .cmdline { font-family: monospace; font-size:0.9em; color: #b0b0b0; margin-top:4px; }
+    </style>
+    <script>
+        function fetchAlerts() {
+            fetch('/api/alerts')
+                .then(r => r.json())
+                .then(data => {
+                    const container = document.getElementById('alerts');
+                    container.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'alert';
+                        div.innerHTML = `
+                            <div>
+                                <span class="timestamp">${item.timestamp}</span>
+                                <span class="reason">${item.reason}</span>
+                                <span class="pid">(PID ${item.pid})</span>
+                            </div>
+                            <div class="cmdline">${item.cmdline}</div>
+                        `;
+                        container.appendChild(div);
+                    });
+                });
+        }
+        setInterval(fetchAlerts, 3000);
+        window.onload = fetchAlerts;
+    </script>
+</head>
+<body>
+    <h1>🛡️ EDR Live Alerts</h1>
+    <div id="alerts"></div>
+</body>
+</html>
